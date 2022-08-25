@@ -12,12 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.LayoutRes
-import com.kennyc.multistateview.R
+import com.example.namespace.R
 
 class MultiStateView
-@JvmOverloads constructor(context: Context,
-                          attrs: AttributeSet? = null,
-                          defStyle: Int = 0) : FrameLayout(context, attrs, defStyle) {
+@JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : FrameLayout(context, attrs, defStyle) {
 
     enum class ViewState {
         CONTENT,
@@ -48,6 +50,7 @@ class MultiStateView
                 listener?.onStateChanged(value)
             }
         }
+
 
     init {
         val inflater = LayoutInflater.from(getContext())
@@ -301,17 +304,20 @@ class MultiStateView
         ObjectAnimator.ofFloat(previousView, "alpha", 1.0f, 0.0f).apply {
             duration = 250L
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator?) {
+                override fun onAnimationStart(animation: Animator) {
+                    //super.onAnimationStart(animation)
                     previousView.visibility = View.VISIBLE
                 }
 
                 override fun onAnimationEnd(animation: Animator) {
+                    //super.onAnimationEnd(animation)
                     previousView.visibility = View.GONE
                     val currentView = requireNotNull(getView(viewState))
                     currentView.visibility = View.VISIBLE
                     ObjectAnimator.ofFloat(currentView, "alpha", 0.0f, 1.0f).setDuration(250L).start()
                 }
-            })
+            }
+            )
         }.start()
     }
 
@@ -359,3 +365,31 @@ private const val VIEW_STATE_CONTENT = 0
 private const val VIEW_STATE_ERROR = 1
 private const val VIEW_STATE_EMPTY = 2
 private const val VIEW_STATE_LOADING = 3
+
+fun MultiStateView.setContentView() {
+    this.viewState = MultiStateView.ViewState.CONTENT
+}
+
+fun MultiStateView.setErrorView() {
+    this.viewState = MultiStateView.ViewState.ERROR
+}
+
+fun MultiStateView.getErrorView(): View? {
+    return this.getView(MultiStateView.ViewState.ERROR)
+}
+
+fun MultiStateView.setEmptyView() {
+    this.viewState = MultiStateView.ViewState.EMPTY
+}
+
+fun MultiStateView.getEmptyView(): View? {
+    return this.getView(MultiStateView.ViewState.EMPTY)
+}
+
+fun MultiStateView.setLoadingView() {
+    this.viewState = MultiStateView.ViewState.LOADING
+}
+
+fun MultiStateView.getLoadingView(): View? {
+    return this.getView(MultiStateView.ViewState.LOADING)
+}
